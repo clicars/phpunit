@@ -9,6 +9,7 @@
  */
 namespace PHPUnit\Util\Log;
 
+use Clicars\Exceptions\ClicarsException;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\ExceptionWrapper;
 use PHPUnit\Framework\ExpectationFailedException;
@@ -54,12 +55,15 @@ final class TeamCity extends DefaultResultPrinter
      */
     public function addError(Test $test, \Throwable $t, float $time): void
     {
+        $e = $t instanceof ExceptionWrapper ? $t->getOriginalException() : $t;
+        $e = ClicarsException::fromThrowable($t);
+
         $this->printEvent(
             'testFailed',
             [
                 'name'     => $test->getName(),
                 'message'  => self::getMessage($t),
-                'details'  => self::getDetails($t),
+                'details'  => \json_encode($e->toArraySimple(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_LINE_TERMINATORS | JSON_PRETTY_PRINT),
                 'duration' => self::toMilliseconds($time),
             ]
         );
