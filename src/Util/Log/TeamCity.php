@@ -56,7 +56,7 @@ final class TeamCity extends DefaultResultPrinter
     public function addError(Test $test, \Throwable $t, float $time): void
     {
         $e = $t instanceof ExceptionWrapper ? $t->getOriginalException() : $t;
-        $e = ClicarsException::fromThrowable($t);
+        $e = ClicarsException::fromThrowable($e);
 
         $this->printEvent(
             'testFailed',
